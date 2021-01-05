@@ -1,0 +1,14 @@
+[
+    {"model": "app.category", "pk": 1, "fields": {"categories": "Seeds"}},
+    {"model": "app.category", "pk": 2, "fields": {"categories": "Fertilizers"}},
+    {"model": "app.category", "pk": 3, "fields": {"categories": "Machine/Equipements"}},
+    {"model": "app.subcategory", "pk": 1, "fields": {"subcategory": "Fruits", "category": 1}},
+    {"model": "app.subcategory", "pk": 2, "fields": {"subcategory": "Vegetables", "category": 1}},
+    {"model": "app.subcategory", "pk": 3, "fields": {"subcategory": "Fibre", "category": 1}},
+    {"model": "app.subcategory", "pk": 4, "fields": {"subcategory": "Others", "category": 1}},
+    {"model": "app.subcategory", "pk": 5, "fields": {"subcategory": "Insecticides", "category": 2}},
+    {"model": "app.subcategory", "pk": 6, "fields": {"subcategory": "Pesticides", "category": 2}},
+    {"model": "app.subcategory", "pk": 7, "fields": {"subcategory": "Others", "category": 2}},
+    {"model": "app.subcategory", "pk": 8, "fields": {"subcategory": "Hand equipments", "category": 3}},
+    {"model": "app.subcategory", "pk": 9, "fields": {"subcategory": "Excavaters", "category": 3}}
+]

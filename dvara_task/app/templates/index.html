@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Form</title>
+        {% load static %}
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="{% static 'bootstrap-4.0.0/css/bootstrap.min.css' %}" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="container">
+            <!-- As a heading -->
+            <nav class="navbar navbar-light bg-light">
+                <span class="navbar-brand mb-0 h1">Category Form</span>
+            </nav>
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+                    <span>{{ message }}</span>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endfor %}
+            {% endif %}
+            <div class="row justify-content-md-center" style="margin-top: 50px;">
+                <div class="col-md-8">
+                    <form action="" method="POST">{% csrf_token %}
+                        <div class="form-group">
+                            <label for="{{ form.category.id_for_label }}">Category</label>
+                            {{ form.category }}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_subcategory">Sub Category</label>
+                            <select class="form-control" id="id_subcategory" name="subcategory">
+                                <option value="" selected disabled>Select SubCategory</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Jquery JS -->
+        <script src="{% static 'jquery-3.5.1/jquery.min.js' %}" crossorigin="anonymous"></script>
+        <!-- Bootstrap JS -->
+        <script src="{% static 'bootstrap-4.0.0/js/bootstrap.min.js' %}" crossorigin="anonymous"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#id_category").on("change", function(){
+                    var category_id = $('#id_category').val();
+                    $('#id_subcategory').empty();
+                    $('#id_subcategory').append('<option value="" selected disabled>Select SubCategory</option>');
+                    $.ajax({
+                        method: 'GET',
+                        url: "{% url 'get_subcategory' %}",
+                        data: { 'category_id': category_id },
+                        datatype: 'json',
+                        success: function (data) {
+                            if (data.success == true) {
+                                $.each(data.records, function (k, v) {
+                                    $('#id_subcategory').append('<option value="' + v.subcategory + '">' + v.subcategory + '</option>');
+                                });
+                            }
+                            else {
+                                alert(data.message);
+                            }
+                        },
+                        error: function (data) {
+                            console.log(data.message);
+                        },
+                    });
+                })
+            })
+        </script>
+    </body>
+</html>
