@@ -25,7 +25,7 @@
             {% endif %}
             <div class="row justify-content-md-center" style="margin-top: 50px;">
                 <div class="col-md-8">
-                    <form action="" method="POST">{% csrf_token %}
+                    <form action="" method="POST" id="id_form">{% csrf_token %}
                         <div class="form-group">
                             <label for="{{ form.category.id_for_label }}">Category</label>
                             {{ form.category }}
@@ -36,8 +36,34 @@
                                 <option value="" selected disabled>Select SubCategory</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary" id="btn_submit">Submit</button>
                     </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table" id="id_table">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Category</th>
+                                <th>SubCategory</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if records %}
+                            {% for record in records %}
+                            <tr>
+                                <td>{{ record.id }}</td>
+                                <td>{{ record.category.categories }}</td>
+                                <td>{{ record.subcategory }}</td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            No Data Found..
+                            {% endif %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -65,6 +91,33 @@
                             }
                             else {
                                 alert(data.message);
+                            }
+                        },
+                        error: function (data) {
+                            console.log(data.message);
+                        },
+                    });
+                })
+
+                // On Submit the form
+                $("#id_form").submit(function(e){
+                    e.preventDefault();
+                    var form = $(this);
+                    $("#id_table tbody").empty();
+                    $.ajax({
+                        method: 'POST',
+                        url: "{% url 'category_view' %}",
+                        data: form.serialize(),
+                        datatype: 'json',
+                        success: function (data) {
+                            console.log(data);
+                            if (data.success == true) {
+                                $.each(data.records, function (k, v) {
+                                    $('#id_table tbody').append('<tr><td>'+v.id+'</td><td>'+v.category_id+'</td><td>'+v.subcategory+'</td></tr>');
+                                });
+                            }
+                            else {
+                                alert(data.errors);
                             }
                         },
                         error: function (data) {

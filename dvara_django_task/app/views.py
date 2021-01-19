@@ -17,8 +17,10 @@ class CategoryView(View):
     def get(self, request, *args, **kwargs):
         """ Returns the template with default values """
         form = CategoryForm()
+        records = SubCategory.objects.all().order_by('-id')
         context = {
-            "form": form
+            "form": form,
+            "records": records
         }
         return render(request, self.template_name, context)
     
@@ -40,9 +42,32 @@ class CategoryView(View):
     
     def post(self, request, *args, **kwargs):
         """ Submits the form and redirect to the same page """
+        print(request.POST)
         form = CategoryForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, "Form Submitted Successfully.")
-            return redirect('/')
-        return render(request, self.template_name, {'form': form})
+            # messages.success(request, "Form Submitted Successfully.")
+            # return redirect('/')
+            records = SubCategory.objects.all().order_by('-id')
+            data = {
+                "success": True,
+                "message": "Form Submitted Successfully.",
+                "records": list(records.values())
+
+            }
+            return JsonResponse(data)
+        else:
+            data = {
+                "success": False,
+                "errors": form
+            }
+            return JsonResponse(data)
+        # return render(request, self.template_name, {'form': form})
+
+
+from flask import Flask
+app = Flask(__name__)
+
+@app.route('/flask')
+def hello_world():
+    return 'Hello, World!'

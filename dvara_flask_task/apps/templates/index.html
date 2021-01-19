@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Form</title>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-4.0.0/css/bootstrap.min.css') }}" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="container-fluid">
+            <nav class="navbar navbar-light bg-light">
+                <span class="navbar-brand mb-0 h1">Category Form</span>
+            </nav>
+            <div class="container">
+                <div class="row justify-content-end">
+                    <div class="col-md-4">
+                        {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-primary alert-dismissible" role="alert">
+                                        <span>{{ message }}</span>
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-md-center" style="margin-top: 30px;">
+                <div class="col-md-6">
+                    <form class="form-group" action="/" method="POST" id="id_form">
+                        <div class="form-group">
+                            <label for="id_category">Category</label>
+                            {{ context.form.category(class_="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_subcategory">Sub Category</label>
+                            {{ context.form.subcategory(class_="form-control") }}
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="btn_submit">Submit</button>
+                    </form>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row justify-content-md-center">
+                    <div class="col-md-12">
+                        <table class="table" id="id_table">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Category</th>
+                                    <th>SubCategory</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if context.records %}
+                                    {% for record in context.records %}
+                                    <tr>
+                                        <td>{{ record.id }}</td>
+                                        <td>{{ record.category.categories }}</td>
+                                        <td>{{ record.subcategory }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr><td colspan="3">No Data Found..</td></tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+       
+        <!-- Jquery JS -->
+        <script src="{{ url_for('static', filename='jquery-3.5.1/jquery.min.js') }}"></script>
+        <!-- Bootstrap JS -->
+        <script src="{{ url_for('static', filename='bootstrap-4.0.0/js/bootstrap.min.js') }}"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#category").on("change", function(){
+                    var category = $(this).val();
+                    $('#subcategory').empty();
+                    $('#subcategory').append('<option value="" selected disabled>Select SubCategory</option>');
+                    $.ajax({
+                        method: 'GET',
+                        url: "{{url_for('get_subcategory')}}",
+                        data: { 'category_id': category },
+                        contentType: 'application/json;charset=UTF-8',
+                        success: function (data) {
+                            if (data.success == true) {
+                                $.each(data.records, function (k, v) {
+                                    $('#subcategory').append('<option value="' + v.id + '">' + v.subcategory + '</option>');
+                                });
+                            }
+                            else {
+                                alert(data.message);
+                            }
+                        }
+                    })
+                })
+
+                // On Submit the form
+                $("#id_form").submit(function(e){
+                    e.preventDefault();
+                    var form = $(this);
+                    $("#id_table tbody").empty();
+                    $.ajax({
+                        method: 'POST',
+                        url: "{{url_for('category')}}",
+                        data: form.serialize(),
+                        success: function (data) {
+                            console.log(data);
+                            if (data.success == true) {
+                                $.each(data.records, function (k, v) {
+                                    $('#id_table tbody').append('<tr><td>'+v.id+'</td><td>'+v.category+'</td><td>'+v.subcategory+'</td></tr>');
+                                });
+                            }
+                            else {
+                                alert(data.message);
+                            }
+                        },
+                        error: function (data) {
+                            console.log(data.message);
+                        },
+                    });
+                })
+            })
+        </script>
+    </body>
+</html>
